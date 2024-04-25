@@ -8,7 +8,7 @@
 時間範圍：2024年4月1日至2024年4月22日
 
 技術使用：
-前端： HTML、CSS、JavaScript\n
+前端： HTML、CSS、JavaScript/n
 框架： React
 套件： MUI、ApexChart
 後端： PHP
