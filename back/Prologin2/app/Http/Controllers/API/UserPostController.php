@@ -320,31 +320,30 @@ class UserPostController extends Controller
         ]);
     }
 
-    //刪除文章
-    public function destroy(Request $request, $wid)
-    {
-        // 从请求中获取token并解析出用户ID
-        $token = $request->token;
-        $decoded_token = json_decode(base64_decode(str_replace('_', '/', str_replace('-', '+', explode('.', $token)[1]))));
-        $userIdFromToken = $decoded_token->id;
-        // 查找要删除的文章
-        $article = UserPost::find($wid);
-        
-        // 确保文章存在
-        if (!$article) {
-            return response()->json(['message' => '文章不存在'], 404);
+        //刪除文章
+        public function destroy(Request $request, $wid)
+        {
+            $token = $request->token;
+            $decoded_token = json_decode(base64_decode(str_replace('_', '/', str_replace('-', '+', explode('.', $token)[1]))));
+            $userIdFromToken = $decoded_token->id;
+            // 查找要刪除的文章
+            $article = UserPost::find($wid);
+            
+            // 確保文章存在
+            if (!$article) {
+                return response()->json(['message' => '文章不存在'], 404);
+            }
+            
+            // 如果ID和發文者ID不一樣
+            if ($article->UID !== $userIdFromToken) {
+                return response()->json(['message' => '無權刪除此文章'], 403);
+            }
+            
+            // 刪除文章
+            $article->delete();
+            
+            return response()->json(['message' => '文章已刪除'], 200);
         }
-        
-        // 检查解码出的用户ID是否与文章的UID匹配
-        if ($article->UID !== $userIdFromToken) {
-            return response()->json(['message' => '无权删除此文章'], 403);
-        }
-        
-        // 删除文章
-        $article->delete();
-        
-        return response()->json(['message' => '文章已删除'], 200);
-    }
 
     public function show($id)
     {

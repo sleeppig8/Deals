@@ -113,15 +113,27 @@ class AboutController extends Controller
             )
             ->get();
 
+            $userName = DB::table('users')->where('id', $id)->value('name');
+
+            if ($mypost->isEmpty()) {
+                $mypost = [['name' => $userName]];
+            } else {
+                $mypost;
+            }
 
         $good = DB::table("users")
             ->join("UserPost", "users.id", "=", "UserPost.UID")
             ->join("LikeAndDislike", "UserPost.WID", "=", "LikeAndDislike.WID")
             ->where("users.id", $id)
-            ->selectRaw('SUM(GiveLike) as Sumlike')
-            ->groupBy('users.id')
+            ->selectRaw('IFNULL(SUM(GiveLike),"0") as Sumlike')
+            // ->groupBy('users.id')
             ->get();
 
+            if ($good->isEmpty()) {
+                $good = ['Sumlike' => "0"];
+            } else {
+                $good;
+            }
 
         $collect = DB::table("users")
             ->join("SubAndReport", "users.id", "=", "SubAndReport.UID")
